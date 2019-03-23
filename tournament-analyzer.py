@@ -31,8 +31,7 @@ def main():
     startingR = input()
     print("Enter round to end analysis: ")
     endingR = input()
-    penultimateRound = int(startingR)-1
-    initialUrl = urlStub + rk9hash + "?round=" + str(penultimateRound)
+    initialUrl = urlStub + rk9hash + "?round=" + str(startingR)
 
     # setup tournament
     soup = getSoupObjFromURL(initialUrl)
@@ -43,7 +42,7 @@ def main():
     for i in range(int(startingR),int(endingR)+1):
         soup2 = getSoupObjFromURL(urlStub + rk9hash + "?round=" + str(i))
         currPairings = player.p.Pairings(soup2,i)
-        Tournament.progressTournament(currPairings)
+        Tournament.progressTournament(currPairings,i)
     
     print(Tournament)
 

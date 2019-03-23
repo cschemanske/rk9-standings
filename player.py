@@ -3,7 +3,6 @@ import requests
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import ssl
-import os
 import re
 
 class Tournament:
@@ -25,11 +24,11 @@ class Tournament:
         for player in self.players:
             self.playersIDDict[player.name] = ID
             ID += 1
-    def progressTournament(self,pairings):
+    def progressTournament(self,pairings,currRound):
         for match in pairings.matches:
             # update opponents list, outcomes list, and player match points. 
-            self.playersDict[self.playersIDDict[match.player1name]].updateInfoMatch(self.playersDict[self.playersIDDict[match.player2name]],match.player1status)
-            self.playersDict[self.playersIDDict[match.player2name]].updateInfoMatch(self.playersDict[self.playersIDDict[match.player1name]],match.player2status)
+            self.playersDict[self.playersIDDict[match.player1name]].updateInfoMatch(self.playersDict[self.playersIDDict[match.player2name]],match.player1status,currRound)
+            self.playersDict[self.playersIDDict[match.player2name]].updateInfoMatch(self.playersDict[self.playersIDDict[match.player1name]],match.player2status,currRound)
     
 
     def __str__(self):
@@ -51,10 +50,12 @@ class Tournament:
             temp = (player.name,player.matchPoints,playerOWP)
             listOfPlayers.append(temp)
         
-        players = sorted(sorted(listOfPlayers, key=lambda t: t[1],reverse=True),key = lambda t: t[1],reverse=True)
+        players = sorted(sorted(listOfPlayers, key = lambda t: float(t[2]),reverse=True),key=lambda t: t[1],reverse=True)
 
+        i = 1
         for player in players:
-            print(player[0]+": "+str(player[1])+", "+str(player[2]))
+            print(str(i)+". "+player[0]+": "+str(player[1])+", "+str(player[2]))
+            i+=1
         return("")
 
        
@@ -98,16 +99,25 @@ class Player:
     def getMatchPoints(self):
         return(self.matchPoints)
     
-    def updateInfoMatch(self,currOpp,currOutcome):
+    def updateInfoMatch(self,currOpp,currOutcome,currRound):
         self.matchOutcomes.append(currOutcome)
         self.opponents.append(currOpp)
         self.roundsPlayed += 1
+
+        # accomodate special case for setup of Day 2 Swiss.
+        if currRound == 10:
+            winMP = 0
+            tieMP = 0
+        else:
+            winMP = 3
+            tieMP = 1
+
         if currOutcome == "winner":
-            self.matchPoints += 3
+            self.matchPoints += winMP
         if currOutcome == "tie":
-            self.matchPoints +=1
+            self.matchPoints += tieMP
         if currOutcome == "Random Bye":
-            self.matchPoints += 3
+            self.matchPoints += winMP
 
         self.calcWinPercentage()
 
@@ -137,6 +147,11 @@ def getPlayerDataFromPairings(pairings):
     
     bye = ["BYE",0]
     players.append(bye)
+
+    # The special case where a player list is being constructed from Round 1 pairings. 
+    if pairings.round == 1:
+        for player in players:
+            player[1] = 0
 
     return(players)
 

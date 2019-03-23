@@ -14,11 +14,17 @@ class Match:
         except IndexError:
             self.tableNumber = "BYE"
         self.player1name = str(self.matchInfo[0].contents[1].contents[0])+ " " + str(self.matchInfo[0].contents[1].contents[2].strip())
-        self.player1status = str(self.matchInfo[0]["class"][4])
+        try:
+            self.player1status = str(self.matchInfo[0]["class"][4])
+        except IndexError:
+            self.player1status = "In Progress"
         self.player1record = str(self.matchInfo[0].contents[2].strip())
         try:
             self.player2name = str(self.matchInfo[2].contents[1].contents[0])+ " " + str(self.matchInfo[2].contents[1].contents[2].strip())
-            self.player2status = str(self.matchInfo[2]["class"][4])
+            try: 
+                self.player2status = str(self.matchInfo[2]["class"][4])
+            except IndexError: 
+                self.player2status = "In Progress"
             self.player2record = str(self.matchInfo[2].contents[2].strip())  
         except IndexError:
             self.player2name = "BYE"

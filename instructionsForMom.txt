@@ -1,0 +1,13 @@
+To run:
+
+1. Make sure the folder containing all files is saved to the desktop.
+2. Open Terminal
+3. copy/paste the following:
+cd /Users/Diane/Desktop/rk9-standings
+python3 tournament.analyzer.py
+
+4. When prompted for the tournament hash, enter the appropriate information from online pairings.  For example, in https://player.rk9labs.com/pairings/BD96502A?round=15, enter BD96502A.
+
+5. For 1 Day events, set Starting Round to 1 and ending Round to the last completed Round. For Day 2 Swiss, set Starting Round to 10 and ending Round to 14 or 15 (or depending on needs).
+
+6. Standings output should follow in 10-45 seconds, but could take up to two minutes.
