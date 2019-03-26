@@ -7,9 +7,7 @@ import os
 import re
 
 '''
-So, it works right now, but to implement starting at Round 1, need to:
-- Change the way match points are processed for the first analysis Round OR change how the players are created.
-- Change the way URL generation works in this main()
+
 '''
 
 def getSoupObjFromURL(url):
@@ -46,10 +44,9 @@ def main():
     
     playersDecks = player.readDecks("testArchetypeCSV.csv")
     player.assignDecks(playersDecks,Tournament)
-    Tournament.populateArchetypes()
-    Tournament.analyzeMatchups()
+    Tournament.deckAnalysis("matchupsJSON")
 
-    print(Tournament)
+    #print(Tournament)
 
 if __name__ == "__main__":
     main()

@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import ssl
 import re
 import csv
+import json
 
 class Tournament:
     def __init__(self,playerList):
@@ -62,12 +63,23 @@ class Tournament:
             i+=1
         return("")
 
+    def deckAnalysis(self,filename):
+        self.populateArchetypes()
+        self.analyzeMatchups()
+        self.saveMatchups(filename)
+        return()
+
     def populateArchetypes(self):
         temp = {}
+        listDecks = []
         for player in self.players:
-            temp[player.deck] = {'winner':0,'loser':0,'tie':0,'Random Bye':0}
-        for entry in temp:
-            self.archetypes[entry] = temp
+            if player.name == "BYE":
+                continue
+            self.archetypes[player.deck] = {}
+            listDecks.append(player.deck)
+        for entry in self.archetypes:
+            for deck in listDecks:
+                self.archetypes[entry][deck] = {'winner':0,'loser':0,'tie':0,'Random Bye':0}
 
     def analyzeMatchups(self):
         for player in self.players:
@@ -75,9 +87,15 @@ class Tournament:
             if player.name == "BYE":
                 continue
             for outcome in player.matchOutcomes:
+                if player.opponents[i].name == "BYE":
+                    i += 1
+                    continue
                 self.archetypes[player.deck][player.opponents[i].deck][outcome] = self.archetypes[player.deck][player.opponents[i].deck][outcome] + 1
                 i += 1
-        print(self.archetypes)
+
+    def saveMatchups(self,filename):
+        with open(filename,'w') as json_file:
+            json.dump(self.archetypes,json_file)
        
 class Player:
     def __init__(self,dataList,num):
@@ -205,12 +223,14 @@ def main():
 
     soup2 = p.getSoupObjFromURL(url2)
     pairings2 = p.Pairings(soup2,11)
+    event.progressTournament(pairings,10)
     event.progressTournament(pairings2,11)
 
     playersDecks = readDecks("testArchetypeCSV.csv")
     assignDecks(playersDecks,event)
     event.populateArchetypes()
     event.analyzeMatchups()
+    event.saveMatchups("deckMatchups")
 
 if __name__ == "__main__":
     main()
