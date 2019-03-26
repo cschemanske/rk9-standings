@@ -8,10 +8,10 @@ and, given a file with player/deck pairs, process matchup win/loss/tie frequenci
 
 RUNTIME ARGUMENTS: 
 
--(opt): passing "DEMO" as first argument will demonstrate functionality using Collinsville 2019 Day 2 
+- (opt): passing "DEMO" as first argument will demonstrate functionality using Collinsville 2019 Day 2 
 pairings and fictional player/deck pairs.
 
--(opt): passing a filename corresponding to a player/deck list as first argument will use that file 
+- (opt): passing a filename corresponding to a player/deck list as first argument will use that file 
 to assign decks and process archetype win rates.  Currently, dependent on CSV of form (player,deck)
 
 INPUT:
@@ -27,8 +27,8 @@ factoring), provide desired last round of pairings input.
 
 OUTPUT files:
 
--matchupsJSON: provided a filename with player/deck pairs, a json file with deck's win/tie/loss 
+- matchupsJSON: provided a filename with player/deck pairs, a json file with deck's win/tie/loss 
 frequencies against each other deck in the field. 
 
--Capable of producing up-to-date standings with tiebreakers by printing the Tournament object.
+- Capable of producing up-to-date standings with tiebreakers by printing the Tournament object.
 '''
