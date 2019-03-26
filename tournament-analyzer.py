@@ -44,6 +44,11 @@ def main():
         currPairings = player.p.Pairings(soup2,i)
         Tournament.progressTournament(currPairings,i)
     
+    playersDecks = player.readDecks("testArchetypeCSV.csv")
+    player.assignDecks(playersDecks,Tournament)
+    Tournament.populateArchetypes()
+    Tournament.analyzeMatchups()
+
     print(Tournament)
 
 if __name__ == "__main__":

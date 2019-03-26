@@ -4,12 +4,15 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import ssl
 import re
+import csv
 
 class Tournament:
     def __init__(self,playerList):
         self.players = [] # list of all players
         self.playersDict = {} # use an ID to lookup a player.
         self.playersIDDict = {} # use a name to lookup an ID.
+        self.rounds = 0
+        self.archetypes = {}
 
         # Create the player objects for each player to track information and dictionary of players.
         ID = 1
@@ -29,6 +32,7 @@ class Tournament:
             # update opponents list, outcomes list, and player match points. 
             self.playersDict[self.playersIDDict[match.player1name]].updateInfoMatch(self.playersDict[self.playersIDDict[match.player2name]],match.player1status,currRound)
             self.playersDict[self.playersIDDict[match.player2name]].updateInfoMatch(self.playersDict[self.playersIDDict[match.player1name]],match.player2status,currRound)
+            self.rounds += 1
     
 
     def __str__(self):
@@ -58,6 +62,22 @@ class Tournament:
             i+=1
         return("")
 
+    def populateArchetypes(self):
+        temp = {}
+        for player in self.players:
+            temp[player.deck] = {'winner':0,'loser':0,'tie':0,'Random Bye':0}
+        for entry in temp:
+            self.archetypes[entry] = temp
+
+    def analyzeMatchups(self):
+        for player in self.players:
+            i = 0
+            if player.name == "BYE":
+                continue
+            for outcome in player.matchOutcomes:
+                self.archetypes[player.deck][player.opponents[i].deck][outcome] = self.archetypes[player.deck][player.opponents[i].deck][outcome] + 1
+                i += 1
+        print(self.archetypes)
        
 class Player:
     def __init__(self,dataList,num):
@@ -155,11 +175,42 @@ def getPlayerDataFromPairings(pairings):
 
     return(players)
 
+def assignDecks(playersDecks,tournament):
+    for entry in playersDecks:
+        ID = tournament.playersIDDict[entry[0]]
+        player = tournament.playersDict[ID]
+        player.deck = entry[1]
+        if player.name == "BYE":
+            player.deck = "Random Bye"
+
+
+
+def readDecks(filename):
+    playersLists = []
+    with open(filename) as csv_file:
+        csv_reader = csv.reader(csv_file,delimiter=',')
+        for line in csv_reader:
+            player = line[0].strip()
+            deck = line[1].strip()
+            playersLists.append([player,deck])
+    return(playersLists)
+
 def main():
     url = "https://player.rk9labs.com/pairings/BD96502A?round=10"
+    url2 = "https://player.rk9labs.com/pairings/BD96502A?round=11"
     soup = p.getSoupObjFromURL(url)
     pairings = p.Pairings(soup,10)
     players = getPlayerDataFromPairings(pairings)
+    event = Tournament(players)
+
+    soup2 = p.getSoupObjFromURL(url2)
+    pairings2 = p.Pairings(soup2,11)
+    event.progressTournament(pairings2,11)
+
+    playersDecks = readDecks("testArchetypeCSV.csv")
+    assignDecks(playersDecks,event)
+    event.populateArchetypes()
+    event.analyzeMatchups()
 
 if __name__ == "__main__":
     main()
