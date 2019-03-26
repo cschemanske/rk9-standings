@@ -5,7 +5,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import ssl
 import os
-
+'''
 class Match:
     def __init__(self,matchTag):
         self.matchInfo = matchTag('div',class_="text-center")
@@ -57,16 +57,6 @@ class Pairings:
             print(match)
         return("End Round " + str(self.round))
         
-def getSoupObjFromURL(url):
-    """ return a soup object from the url """
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-
-    html = urlopen(url, context=ctx).read()
-    soup = BeautifulSoup(html, "html.parser")
-    return soup
-
 
 def main():
     url = "https://player.rk9labs.com/pairings/BD96502A?round=10"
